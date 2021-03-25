@@ -57,11 +57,9 @@ linux直接访问es
 这两个一样
 ```
 
+Elasticsearch有多种摄取选项，但最终它们都做同样的事情：将JSON文档放入Elasticsearch索引中。
 
-
-###  Elasticsearch有多种摄取选项，但最终它们都做同样的事情：将JSON文档放入Elasticsearch索引中。
-
-**简单的数据存入**
+####  简单的数据存入
 
 ```json
 curl -X PUT "localhost:9200/customer/_doc/1?pretty" -H 'Content-Type: application/json'    -d
@@ -93,11 +91,12 @@ curl "localhost:9200/_cat/indices?v=true"
 
 ```
 curl -H "Content-Type: application/json" -XPOST "localhost:9200/bank/_bulk?pretty&refresh" --data-binary "@accounts.json"
+大量的提交
 ```
 
-大量的提交
 
-**Linux查询对应索引的前十条数据**
+
+#### Linux查询对应索引的前十条数据
 
 ```shell
 curl -X GET "localhost:9200/bank/_search?pretty" -H 'Content-Type: application/json' -d'
@@ -112,7 +111,7 @@ curl -X GET "localhost:9200/bank/_search?pretty" -H 'Content-Type: application/j
 
 + 随时调用
 
-```
+```shell
 curl -X GET "localhost:9200/bank/_search?pretty" -H 'Content-Type: application/json' -d'
 {
   "query": { "match_all": {} }
@@ -122,7 +121,7 @@ curl -X GET "localhost:9200/bank/_search?pretty" -H 'Content-Type: application/j
 
 
 
-**Linux自定义查询任意条数据**
+#### Linux自定义查询任意条数据
 
 ```shell
 curl -X GET "localhost:9200/bank/_search?pretty" -H 'Content-Type: application/json' -d'
@@ -278,13 +277,13 @@ curl -X GET "localhost:9200/bank/_search?pretty" -H 'Content-Type: application/j
 
 
 
-#  RESTAPI
+#  REST API
 
 ##  文档api
 
-###  ADD API(增加单一索引)
+###  CREATE API(增加单一索引)
 
-**三种方法**
++ 第一种增加方法
 
 ```shell
 curl -X PUT "localhost:9200/my-index-000001/_doc/1?pretty" -H 'Content-Type: application/json' -d'
@@ -298,17 +297,7 @@ curl -X PUT "localhost:9200/my-index-000001/_doc/1?pretty" -H 'Content-Type: app
 '
 ```
 
-```shell
-curl -X PUT "localhost:9200/my-index-000001/_create/1?pretty" -H 'Content-Type: application/json' -d'
-{
-  "@timestamp": "2099-11-15T13:12:00",
-  "message": "GET /search HTTP/1.1 200 1070000",
-  "user": {
-    "id": "kimchy"
-  }
-}
-'
-```
++ 第二种增加方法
 
 ```shell
 curl -X PUT "localhost:9200/my-index-000001/_doc/1?op_type=create&pretty" -H 'Content-Type: application/json' -d'
@@ -322,7 +311,37 @@ curl -X PUT "localhost:9200/my-index-000001/_doc/1?op_type=create&pretty" -H 'Co
 '
 ```
 
-**第一种方法如何重复都不会报错，而第二三中如果存在索引会报错**
++ 第三种增加方法
+
+```shell
+curl -X PUT "localhost:9200/my-index-000001/_create/1?pretty" -H 'Content-Type: application/json' -d'
+{
+  "@timestamp": "2099-11-15T13:12:00",
+  "message": "GET /search HTTP/1.1 200 1070000",
+  "user": {
+    "id": "kimchy"
+  }
+}
+'
+```
+
+**第一四种方法如何重复都不会报错，而第二三四中如果存在索引会报错**
+
+**每一个方法只能有唯一的type，目前不能改变**
+
++ 第四种增加方法
+
+```shell
+curl -X PUT "localhost:9200/my-index-000003/_doc/1?pretty" -H 'Content-Type: application/json'    -d'
+{
+  "name": "John Doe"
+}
+'
+```
+
+
+
+****
 
 ###  DELETE API(删除一个索引值)
 
@@ -338,12 +357,12 @@ curl -X PUT "localhost:9200/my-index-000001/_doc/1?op_type=create&pretty" -H 'Co
 
     ```
   curl -X DELETE "localhost:9200/my-index-000001/_doc/1?timeout=5m&pretty"
-    ```
+  ```
 
 + 普通删除
 
   ```
-  curl -X DELETE "localhost:9200/my-index-000001/_doc/1?pretty"  
+  curl -X DELETE "localhost:9200/my-index-000004/_doc/1?pretty"  
   ```
 
 
@@ -370,9 +389,9 @@ curl -X POST "localhost:9200/my-index-000001/_delete_by_query?pretty" -H 'Conten
 + 删除单一索引内的全部内容
 
 ```
-curl -X POST "localhost:9200/my-index-000001/_delete_by_query?conflicts=proceed&pretty" -H 'Content-Type: application/json' -d'
+curl -X POST "localhost:9200/my-index-000004/_delete_by_query?conflicts=proceed&pretty" -H 'Content-Type: application/json' -d'
 {
-  "query": 
+  "query": {
     "match_all": {}
   }
 }
@@ -485,9 +504,9 @@ curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: applicatio
 原标签字段会成为一个列表
 ```
 
-+ 添加新的字段
++ 修改字段值(或添加新的字段)
 
-```
+```shell
 curl -X POST "localhost:9200/test/_update/10?pretty" -H 'Content-Type: application/json' -d'
 {
   "script" : "ctx._source.new_field = \u0027value_of_new_field\u0027"
@@ -497,7 +516,7 @@ curl -X POST "localhost:9200/test/_update/10?pretty" -H 'Content-Type: applicati
 
 + 插入新的字段(跟上述的功能一样)
 
-```
+```shell
 curl -X POST "localhost:9200/test/_update/10?pretty" -H 'Content-Type: application/json' -d'
 {
   "doc": {
@@ -509,7 +528,7 @@ curl -X POST "localhost:9200/test/_update/10?pretty" -H 'Content-Type: applicati
 
 + 删除新的字段
 
-```
+```shell
 curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: application/json' -d'
 {
   "script" : "ctx._source.remove(\u0027new_field\u0027)"
@@ -521,7 +540,7 @@ curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: applicatio
 
 如果文档尚不存在，则`upsert`元素的内容将作为新文档插入。如果文档存在， `script`则执行：
 
-```
+```shell
 curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: application/json' -d'
 {
   "script": {
@@ -533,6 +552,28 @@ curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: applicatio
   },
   "upsert": {
     "counter": 1
+  }
+}
+'
+```
+
+
+
+###  UPDATE BY QUERY API(通过搜索来更新)
+
++ 基本格式
+
+```
+POST /<target>/_update_by_query
+```
+
++ 查询修改，没查到就是新增
+
+```shell
+curl -X POST "localhost:9200/my-index-000001/_update_by_query?refresh&slices=5&pretty" -H 'Content-Type: application/json' -d'
+{
+  "script": {
+    "source": "ctx._source[\u0027extra\u0027] = \u0027test\u0027"
   }
 }
 '
@@ -568,6 +609,105 @@ curl -X GET "localhost:9200/my-index-000001/_source/1?pretty"
 ```
 curl -X GET "localhost:9200/my-index-000001/_source/1/?_source_includes=*.id&_source_excludes=entities&pretty"
 表示只取id排除entities
+```
+
+###  mget API(多获取api)
+
++ 通过id获取数据
+
+```shell
+curl -X GET "localhost:9200/_mget?pretty" -H 'Content-Type: application/json' -d'
+{
+  "docs": [
+    {
+      "_index": "my-index-000001",
+      "_id": "1"
+    },
+    {
+      "_index": "my-index-000001",
+      "_id": "2"
+    }
+  ]
+}
+'
+```
+
++ 同上
+
+```shell
+curl -X GET "localhost:9200/my-index-000001/_mget?pretty" -H 'Content-Type: application/json' -d'
+{
+  "docs": [
+    {
+      "_type": "_doc",
+      "_id": "1"
+    },
+    {
+      "_type": "_doc",
+      "_id": "2"
+    }
+  ]
+}
+'
+```
+
++ 同上
+
+```shell
+curl -X GET "localhost:9200/test/_doc/_mget?pretty" -H 'Content-Type: application/json' -d'
+{
+  "docs": [
+    {
+      "_id": "1"
+    },
+    {
+      "_id": "2"
+    }
+  ]
+}
+'
+```
+
++ 同上
+
+```shell
+curl -X GET "localhost:9200/my-index-000001/_mget?pretty" -H 'Content-Type: application/json' -d'
+{
+  "ids" : ["1", "2"]
+}
+'
+```
+
++ 根据不同需求查询
+
+```shell
+curl -X GET "localhost:9200/_mget?pretty" -H 'Content-Type: application/json' -d'
+{
+  "docs": [
+    {
+      "_index": "test",
+      "_type": "_doc",
+      "_id": "1",
+      "_source": false
+    },
+    {
+      "_index": "test",
+      "_type": "_doc",
+      "_id": "2",
+      "_source": [ "field3", "field4" ]
+    },
+    {
+      "_index": "test",
+      "_type": "_doc",
+      "_id": "3",
+      "_source": {
+        "include": [ "user" ],
+        "exclude": [ "user.location" ]
+      }
+    }
+  ]
+}
+'
 ```
 
 

@@ -43,6 +43,49 @@ res = es.search(index="test-index", body={"query": {"match_all": {}}})
 es.delete(index="test-index", id=1)
 ```
 
+## Requests连接ES
+
++ 简单增加
+
+```python
+url ='http://localhost:9200/my-index-000004/_create/3'
+data ={
+    '@timestamp': '2099-11-15T13:12:00',
+     'message': 'GET /search HTTP/1.1 200 1070000',
+     'user': {'id': 'kimchy'}
+ 	}
+response = requests.post(url=url,json=data)
+response.json()获取结果
+```
+
++ 简单删除
+
+```python
+url = 'http://localhost:9200/my-index-000004/_doc/1?pretty'
+
+response = requests.delete(url=url)
+```
+
++ 简单修改
+
+```
+url = 'http://localhost:9200/my-index-000004/_update/2'
+
+data = {'script': "ctx._source.new_field = 'value_of_new_field'"}
+
+response = requests.post(url=url,json=data)
+```
+
++ 简单查找
+
+```
+url = "http://localhost:9200/my-index-000004/_doc/2"
+
+response = resquests.get(url=url)
+```
+
+
+
 
 
 ##  不用Python连接es
@@ -474,7 +517,7 @@ POST /<index>/_update/<_id>
 + 更新字段的数量
 
 ```shell
-curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: application/json' -d'
+curl -X POST "localhost:9200/my-index-000004/_update/1?pretty" -H 'Content-Type: application/json' -d'
 {
   "script" : {
     "source": "ctx._source.counter += params.count",
@@ -490,7 +533,7 @@ curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: applicatio
 + 增加标签
 
 ```shell
-curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: application/json' -d'
+curl -X POST "localhost:9200/my-index-000004/_update/1?pretty" -H 'Content-Type: application/json' -d'
 {
   "script": {
     "source": "ctx._source.tags.add(params.tag)",
@@ -507,7 +550,7 @@ curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: applicatio
 + 修改字段值(或添加新的字段)
 
 ```shell
-curl -X POST "localhost:9200/test/_update/10?pretty" -H 'Content-Type: application/json' -d'
+curl -X POST "localhost:9200/my-index-000004/_update/10?pretty" -H 'Content-Type: application/json' -d'
 {
   "script" : "ctx._source.new_field = \u0027value_of_new_field\u0027"
 }
@@ -517,7 +560,7 @@ curl -X POST "localhost:9200/test/_update/10?pretty" -H 'Content-Type: applicati
 + 插入新的字段(跟上述的功能一样)
 
 ```shell
-curl -X POST "localhost:9200/test/_update/10?pretty" -H 'Content-Type: application/json' -d'
+curl -X POST "localhost:9200/my-index-000004/_update/10?pretty" -H 'Content-Type: application/json' -d'
 {
   "doc": {
     "name": "new_name"
@@ -529,7 +572,7 @@ curl -X POST "localhost:9200/test/_update/10?pretty" -H 'Content-Type: applicati
 + 删除新的字段
 
 ```shell
-curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: application/json' -d'
+curl -X POST "localhost:9200/my-index-000004/_update/1?pretty" -H 'Content-Type: application/json' -d'
 {
   "script" : "ctx._source.remove(\u0027new_field\u0027)"
 }
@@ -541,7 +584,7 @@ curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: applicatio
 如果文档尚不存在，则`upsert`元素的内容将作为新文档插入。如果文档存在， `script`则执行：
 
 ```shell
-curl -X POST "localhost:9200/test/_update/1?pretty" -H 'Content-Type: application/json' -d'
+curl -X POST "localhost:9200/my-index-000004/_update/1?pretty" -H 'Content-Type: application/json' -d'
 {
   "script": {
     "source": "ctx._source.counter += params.count",
@@ -654,7 +697,7 @@ curl -X GET "localhost:9200/my-index-000001/_mget?pretty" -H 'Content-Type: appl
 + 同上
 
 ```shell
-curl -X GET "localhost:9200/test/_doc/_mget?pretty" -H 'Content-Type: application/json' -d'
+curl -X GET "localhost:9200/my-index-000004/_doc/_mget?pretty" -H 'Content-Type: application/json' -d'
 {
   "docs": [
     {

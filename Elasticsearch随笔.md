@@ -68,7 +68,7 @@ response = requests.delete(url=url)
 
 + 简单修改
 
-```
+```shell
 url = 'http://localhost:9200/my-index-000004/_update/2'
 
 data = {'script': "ctx._source.new_field = 'value_of_new_field'"}
@@ -78,7 +78,7 @@ response = requests.post(url=url,json=data)
 
 + 简单查找
 
-```
+```shell
 url = "http://localhost:9200/my-index-000004/_doc/2"
 
 response = resquests.get(url=url)
@@ -244,7 +244,6 @@ curl -X GET "localhost:9200/bank/_search?pretty" -H 'Content-Type: application/j
   }
 }
 '
-
 ```
 
 **汇总分析结果**
@@ -416,7 +415,7 @@ curl -X PUT "localhost:9200/my-index-000003/_doc/1?pretty" -H 'Content-Type: app
 
 + 简单示例
 
-```
+```shell
 curl -X POST "localhost:9200/my-index-000001/_delete_by_query?pretty" -H 'Content-Type: application/json' -d'
 {
   "query": {
@@ -431,7 +430,7 @@ curl -X POST "localhost:9200/my-index-000001/_delete_by_query?pretty" -H 'Conten
 
 + 删除单一索引内的全部内容
 
-```
+```shell
 curl -X POST "localhost:9200/my-index-000004/_delete_by_query?conflicts=proceed&pretty" -H 'Content-Type: application/json' -d'
 {
   "query": {
@@ -445,7 +444,7 @@ conflicts如果被查询删除导致版本冲突，该怎么办： abort或proce
 
 + 删除多个索引内的全部内容
 
-```
+```shell
 curl -X POST "localhost:9200/my-index-000001,my-index-000002/_delete_by_query?pretty" -H 'Content-Type: application/json' -d'
 {
   "query": {
@@ -457,7 +456,7 @@ curl -X POST "localhost:9200/my-index-000001,my-index-000002/_delete_by_query?pr
 
 + 路由删除(暂时不懂)
 
-```
+```shell
 curl -X POST "localhost:9200/my-index-000001/_delete_by_query?routing=1&pretty" -H 'Content-Type: application/json' -d'
 {
   "query": {
@@ -473,7 +472,7 @@ curl -X POST "localhost:9200/my-index-000001/_delete_by_query?routing=1&pretty" 
 
 + 调整删除总量
 
-```
+```shell
 curl -X POST "localhost:9200/my-index-000001/_delete_by_query?scroll_size=5000&pretty" -H 'Content-Type: application/json' -d'
 {
   "query": {
@@ -487,7 +486,7 @@ curl -X POST "localhost:9200/my-index-000001/_delete_by_query?scroll_size=5000&p
 
 + 查看删除状态
 
-```
+```shell
 curl -X GET "localhost:9200/_refresh?pretty"
 curl -X POST "localhost:9200/my-index-000001/_search?size=0&filter_path=hits.total&pretty" -H 'Content-Type: application/json' -d'
 {
